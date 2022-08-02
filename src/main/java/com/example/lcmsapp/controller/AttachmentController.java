@@ -13,6 +13,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -29,12 +30,15 @@ public class AttachmentController {
     private final AttachmentService attachmentService;
     private final Path root = Paths.get("C:\\PDP Lesson\\Backend G7\\lcms-app\\src\\main\\resources\\upload");
 
+
+//    @PreAuthorize(value = "hasAnyRole('MANAGER','ADMIN')")
     @PostMapping("/upload")
     public ResponseEntity<?> upload(MultipartHttpServletRequest request) {
         ApiResponse apiResponse = attachmentService.uploadFileSystem(request);
         return ResponseEntity.status(apiResponse.isSuccess() ? 201 : 409).body(apiResponse);
     }
 
+//    @PreAuthorize(value = "hasAnyRole('ADMIN','MANAGER','USER')")
     @SneakyThrows
     @GetMapping("/{id}")
     public ResponseEntity<?> getFile(@PathVariable UUID id) {
@@ -54,12 +58,14 @@ public class AttachmentController {
 
 
     //filesave DB
+//    @PreAuthorize(value = "hasAnyRole('ADMIN','MANAGER')")
     @PostMapping("/uploadDB")
     public ResponseEntity<?> saveToDB(MultipartHttpServletRequest request) {
         ApiResponse response = attachmentService.uploadDB(request);
         return ResponseEntity.ok(response);
     }
 
+//    @PreAuthorize(value = "hasAnyRole('ADMIN','MANAGER','USER')")
     @GetMapping("/downloadDB/{attachmentId}")
     public ResponseEntity<?> downloadDB(@PathVariable(value = "attachmentId") UUID id) {
        return attachmentService.downloadDB(id);

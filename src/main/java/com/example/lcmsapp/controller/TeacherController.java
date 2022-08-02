@@ -7,6 +7,7 @@ import com.example.lcmsapp.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -23,44 +24,40 @@ public class TeacherController {
     private final TeacherRepository teacherRepository;
     private final TeacherService teacherService;
 
-    //save
+
+//    @PreAuthorize(value = "hasAnyRole('ADMIN','MANAGER')")
     @PostMapping
     public ResponseEntity<?> save(@Valid @RequestBody TeacherDTO teacherDTO) {
-        //Restcontroller Adviceni o'tish kerak oddiy exception ishlamadi
         ApiResponse response = teacherService.add(teacherDTO);
         return ResponseEntity.status(response.isSuccess() ? 201 : 409).body(response);
     }
 
-    //getOne
-    @GetMapping("/{uuid}")
+//    @GetMapping("/{uuid}")
     public ResponseEntity<?> getOne(@PathVariable UUID uuid) {
         ApiResponse response = teacherService.getOne(uuid);
         return ResponseEntity.status(response.isSuccess() ? 200 : 404).body(response);
     }
 
-    //getAll va pagination va search va filtr byCourse filterbyFilial
-
+//    @PreAuthorize(value = "hasAnyRole('ADMIN','MANAGER')")
     @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(teacherService.getAll());
     }
 
-    //update
-
+//    @PreAuthorize(value = "hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("{uuid}")
     public ResponseEntity<?> update(@PathVariable UUID uuid,@RequestBody TeacherDTO teacherDTO) {
         ApiResponse update = teacherService.update(uuid, teacherDTO);
         return ResponseEntity.status(update.isSuccess() ? 200 : 409).body(update);
     }
 
-    //delete
+//    @PreAuthorize(value = "hasAnyRole('ADMIN')")
     @DeleteMapping("{uuid}")
     public ResponseEntity<?> delete(@PathVariable UUID uuid){
         ApiResponse delete = teacherService.delete(uuid);
         return ResponseEntity.status(delete.isSuccess() ? HttpStatus.OK : HttpStatus.CONFLICT).body(delete);
     }
 
-    //validation ishlashi un metod
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
